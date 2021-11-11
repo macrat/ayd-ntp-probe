@@ -56,7 +56,7 @@ func main() {
 
 	if args.TargetURL.Opaque == "" {
 		logger.Failure("invalid target URI: host name is required")
-		os.Exit(2)
+		return
 	}
 
 	stime := time.Now()
