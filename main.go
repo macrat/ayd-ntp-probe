@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"net"
-	"net/url"
 	"os"
 	"time"
 
@@ -17,8 +16,8 @@ var (
 	commit  = "UNKNOWN"
 )
 
-func NormalizeTarget(u *url.URL) *url.URL {
-	u2 := &url.URL{
+func NormalizeTarget(u *ayd.URL) *ayd.URL {
+	u2 := &ayd.URL{
 		Scheme: "ntp",
 		Opaque: u.Opaque,
 	}
@@ -55,7 +54,7 @@ func main() {
 	logger := ayd.NewLogger(args.TargetURL)
 
 	if args.TargetURL.Opaque == "" {
-		logger.Failure("invalid target URI: host name is required")
+		logger.Failure("invalid target URI: host name is required", nil)
 		return
 	}
 
@@ -65,17 +64,16 @@ func main() {
 
 	if err != nil {
 		if e, ok := err.(*net.OpError); ok && e.Op == "read" {
-			logger.WithTime(stime, latency).Failure(fmt.Sprintf("%s: connection refused", e.Addr))
+			logger.WithTime(stime, latency).Failure(fmt.Sprintf("%s: connection refused", e.Addr), nil)
 		} else {
-			logger.WithTime(stime, latency).Failure(err.Error())
+			logger.WithTime(stime, latency).Failure(err.Error(), nil)
 		}
 	} else {
-		logger.WithTime(stime, resp.RTT).Healthy(fmt.Sprintf(
-			"reference=%X stratum=%d rootdelay=%+f offset=%+f",
-			resp.ReferenceID,
-			resp.Stratum,
-			resp.RootDelay.Seconds(),
-			resp.ClockOffset.Seconds(),
-		))
+		logger.WithTime(stime, resp.RTT).Healthy("query succeeded", map[string]interface{}{
+			"reference": resp.ReferenceID,
+			"stratum": resp.Stratum,
+			"root_delay": resp.RootDelay.Seconds()*1000,
+			"offset": resp.ClockOffset.Seconds()*1000,
+		})
 	}
 }

@@ -1,10 +1,10 @@
 package main_test
 
 import (
-	"net/url"
 	"testing"
 
 	"github.com/macrat/ayd-ntp-probe"
+	"github.com/macrat/ayd/lib-ayd"
 )
 
 func TestParseTarget(t *testing.T) {
@@ -20,7 +20,7 @@ func TestParseTarget(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.Input, func(t *testing.T) {
-			u, err := url.Parse(tt.Input)
+			u, err := ayd.ParseURL(tt.Input)
 			if err != nil {
 				t.Fatalf("failed to parse input url: %s", err)
 			}
