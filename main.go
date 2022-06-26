@@ -19,11 +19,11 @@ var (
 func NormalizeTarget(u *ayd.URL) *ayd.URL {
 	u2 := &ayd.URL{
 		Scheme: "ntp",
-		Opaque: u.Opaque,
+		Host:   u.Host,
 	}
 
-	if u2.Opaque == "" {
-		u2.Opaque = u.Host
+	if u2.Host == "" {
+		u2.Host = u.Opaque
 	}
 
 	return u2
@@ -53,13 +53,13 @@ func main() {
 	args.TargetURL = NormalizeTarget(args.TargetURL)
 	logger := ayd.NewLogger(args.TargetURL)
 
-	if args.TargetURL.Opaque == "" {
+	if args.TargetURL.Host == "" {
 		logger.Failure("invalid target URI: host name is required", nil)
 		return
 	}
 
 	stime := time.Now()
-	resp, err := ntp.Query(args.TargetURL.Opaque)
+	resp, err := ntp.Query(args.TargetURL.Host)
 	latency := time.Now().Sub(stime)
 
 	if err != nil {
@@ -70,10 +70,10 @@ func main() {
 		}
 	} else {
 		logger.WithTime(stime, resp.RTT).Healthy("query succeeded", map[string]interface{}{
-			"reference": resp.ReferenceID,
-			"stratum": resp.Stratum,
-			"root_delay": resp.RootDelay.Seconds()*1000,
-			"offset": resp.ClockOffset.Seconds()*1000,
+			"reference":  resp.ReferenceID,
+			"stratum":    resp.Stratum,
+			"root_delay": resp.RootDelay.Seconds() * 1000,
+			"offset":     resp.ClockOffset.Seconds() * 1000,
 		})
 	}
 }

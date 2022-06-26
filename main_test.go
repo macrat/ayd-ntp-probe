@@ -12,10 +12,10 @@ func TestParseTarget(t *testing.T) {
 		Input  string
 		Output string
 	}{
-		{"ntp:example.com", "ntp:example.com"},
-		{"ntp://example.com", "ntp:example.com"},
-		{"ntp:example.com:1230", "ntp:example.com:1230"},
-		{"ntp://foo:bar@example.com:1230/path/to#abc?def=ghi", "ntp:example.com:1230"},
+		{"ntp:example.com", "ntp://example.com"},
+		{"ntp://example.com", "ntp://example.com"},
+		{"ntp:example.com:1230", "ntp://example.com:1230"},
+		{"ntp://foo:bar@example.com:1230/path/to#abc?def=ghi", "ntp://example.com:1230"},
 	}
 
 	for _, tt := range tests {

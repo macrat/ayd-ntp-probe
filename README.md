@@ -14,5 +14,5 @@ NTP plugin for [Ayd?](https://github.com/macrat/ayd) status check service.
 ## Usage
 
 ``` shell
-$ ayd ntp:ntp.example.com
+$ ayd ntp://ntp.example.com
 ```
